@@ -58,11 +58,12 @@ class l1b(initL1b):
         """
         Equlization. Apply an offset and a gain.
         :param toa: TOA in DN
-        :param eq_add: Offset in DN
+        :param eq_add: Offset in DN (dark signal)
         :param eq_mult: Gain factor, adimensional
         :return: TOA in DN, equalized
         """
         #TODO
+        toa = (toa-eq_add)/eq_mult
         return toa
 
     def restoration(self,toa,gain):
@@ -74,7 +75,7 @@ class l1b(initL1b):
         """
         #TODO
         self.logger.debug('Sanity check. TOA in radiances after gain application ' + str(toa[1,-1]) + ' [mW/m2/sr]')
-
+        toa = toa * gain
         return toa
 
     def plotL1bToa(self, toa_l1b, outputdir, band):
