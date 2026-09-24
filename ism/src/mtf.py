@@ -87,7 +87,7 @@ class mtf:
         :param focal: focal length [m]
         :param w: pixel size in meters [m]
         :return fn2D: normalised frequencies 2D (f/(1/w))
-        :return fr2D: relative frequencies 2D (f/(1/fc))
+        :return fr2D: relative frequencies 2D (f/fc))
         :return fnAct: 1D normalised frequencies 2D ACT (f/(1/w))
         :return fnAlt: 1D normalised frequencies 2D ALT (f/(1/w))
         """
@@ -118,6 +118,7 @@ class mtf:
         :return: diffraction MTF
         """
         #TODO
+        Hdiff = (2/np.pi)*(np.acos(fr2D)-fr2D*(1-fr2D**2)**(1/2))
         return Hdiff
 
 
@@ -131,6 +132,7 @@ class mtf:
         :return: Defocus MTF
         """
         #TODO
+
         return Hdefoc
 
     def mtfWfeAberrations(self, fr2D, lambd, kLF, wLF, kHF, wHF):
@@ -145,6 +147,7 @@ class mtf:
         :return: WFE Aberrations MTF
         """
         #TODO
+
         return Hwfe
 
     def mtfDetector(self,fn2D):
