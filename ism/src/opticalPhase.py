@@ -106,7 +106,6 @@ class opticalPhase(initIsm):
         """
         # TODO
         GE = fft2(toa)
-        fftshift(Hsys)
         image_fft = GE * fftshift(Hsys) # check that the imaginary part is almost zero
         toa_ft = np.real(ifft2(image_fft))
 

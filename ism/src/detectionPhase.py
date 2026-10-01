@@ -121,7 +121,7 @@ class detectionPhase(initIsm):
 
         FWC = self.ismConfig.FWC
         toae = toa * QE
-        toae[toa>FWC] = FWC
+        toae[toae>FWC] = FWC
 
         return toae
 
@@ -167,9 +167,14 @@ class detectionPhase(initIsm):
         """
         #TODO
         DSNU = np.abs(np.random.standard_normal(toa.shape[1]))*kdsnu
-        Sd = ds_A_coeff * ((T / Tref) ** 3) * np.exp(-ds_B_coeff(1 / T - 1 / Tref))
+        Sd = ds_A_coeff * ((T / Tref) ** 3) * np.exp(-ds_B_coeff*(1 / T - 1 / Tref))
         DS = Sd*(1+DSNU)
+        toa = toa + DS
+
+        '''Ds = np.zeros(toa.shape[0])
+
         for x in range(toa.shape[0]):
-            toa[:,x] = toa[:,x] + DS
+            Ds[x] = Sd * (1.0 + DSNU[x])
+            toa[:, x] = toa[:, x] + Ds[x]'''
 
         return toa
