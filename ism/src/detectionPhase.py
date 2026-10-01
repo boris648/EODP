@@ -1,6 +1,6 @@
-
 from ism.src.initIsm import initIsm
 import numpy as np
+import scipy.constants as spy
 from common.io.writeToa import writeToa
 from common.plot.plotMat2D import plotMat2D
 from common.plot.plotF import plotF
@@ -105,6 +105,9 @@ class detectionPhase(initIsm):
         :return: Toa in photons
         """
         #TODO
+        E_in = toa * area_pix * tint
+        E_ph = spy.Planck*spy.c/wv
+        toa_ph = E_in/E_ph
         return toa_ph
 
     def phot2Electr(self, toa, QE):
