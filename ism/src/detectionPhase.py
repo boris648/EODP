@@ -105,7 +105,7 @@ class detectionPhase(initIsm):
         :return: Toa in photons
         """
         #TODO
-        E_in = toa * area_pix * tint
+        E_in = toa * area_pix * tint*0.001
         E_ph = spy.Planck*spy.c/wv
         toa_ph = E_in/E_ph
         return toa_ph
@@ -119,9 +119,9 @@ class detectionPhase(initIsm):
         """
         #TODO
 
+        FWC = self.ismConfig.FWC
         toae = toa * QE
-        if toae>self.ismConfig.FWC:
-            toae = self.ismConfig.FWC
+        toae[toa>FWC] = FWC
 
         return toae
 
@@ -136,6 +136,7 @@ class detectionPhase(initIsm):
         :return: toa in e- including bad & dead pixels
         """
         #TODO
+        toa[:, 5] = toa[:, 5] * (1 - bad_pix_red)
         return toa
 
     def prnu(self, toa, kprnu):
@@ -148,7 +149,7 @@ class detectionPhase(initIsm):
         #TODO
         PRNU = np.random.standard_normal(toa.shape[1])*kprnu
         for x in range(toa.shape[0]):
-            toa[:,x] = toa[:,x]*(1+PRNU)
+            toa = toa*(1+PRNU)
 
         return toa
 
