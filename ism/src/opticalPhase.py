@@ -105,6 +105,11 @@ class opticalPhase(initIsm):
         :return: TOA image in irradiances [mW/m2]
         """
         # TODO
+        GE = fft2(toa)
+        fftshift(Hsys)
+        image_fft = GE * fftshift(Hsys) # check that the imaginary part is almost zero
+        toa_ft = np.real(ifft2(image_fft))
+
         return toa_ft
 
     def spectralIntegration(self, sgm_toa, sgm_wv, band):
@@ -127,13 +132,6 @@ class opticalPhase(initIsm):
         wv_isrf = wv_isrf*1000
 
         # create interpolant and interpolate isrf
-        '''cs = interp1d(wv_isrf, isrf, fill_value=(0,0),bounds_error=False)
-        interp_isrf = cs(sgm_wv) # 1D vector
-
-        for ialt in range(sgm_toa.shape[0]):
-            for iact in range(sgm_toa.shape[1]):
-                toa[ialt,iact] = np.sum(sgm_toa[ialt,iact,:] * interp_isrf)'''
-
         for ialt in range(sgm_toa.shape[0]):
             for iact in range(sgm_toa.shape[1]):
                 cs = interp1d(sgm_wv, sgm_toa[ialt, iact, :], fill_value=(0, 0), bounds_error=False)

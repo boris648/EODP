@@ -106,8 +106,8 @@ class mtf:
 
         fn2D = f2D/(1/w)
         fr2D = f2D/fc
-        fnAct = fAlt/(1/w)
-        fnAlt = fAct/(1/w)
+        fnAct = fAct/(1/w)
+        fnAlt = fAlt/(1/w)
 
         return fn2D, fr2D, fnAct, fnAlt
 
@@ -171,6 +171,9 @@ class mtf:
         :return: Smearing MTF
         """
         #TODO
+        Hsmear = np.zeros((np.size(fnAlt), ncolumns))
+        for n in range(ncolumns):
+            Hsmear[:, n] = np.sinc(fnAlt * ksmear)
         return Hsmear
 
     def mtfMotion(self, fn2D, kmotion):
