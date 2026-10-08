@@ -63,7 +63,35 @@ class l1c(initL1c):
         :return: L1C radiances, L1C latitude and longitude in degrees
         '''
         #TODO
+        tck = bisplrep(lat,lon,toa)
+        m = mgrs.MGRS()
+        mgrs_tiles = set([])
+
+        for i in range(toa.shape[0]):
+            for j in range(toa.shape[1]):
+
+                mgrstile = m.toMGRS(lat[i,j],lon[i,j],MGRSPrecision=self.l1cConfig.mgrs_tile_precision)
+                mgrs_tiles.add(mgrstile)
+
+        mgrs_tiles = list(mgrs_tiles)
+
+        toa_l1c = np.zeros(len(mgrs_tiles))
+        lat_l1c = np.zeros(len(mgrs_tiles))
+        lon_l1c = np.zeros(len(mgrs_tiles))
+
+        tck = bisplrep(lat,lon,toa)
+
+        for i in range(len(mgrs_tiles)):
+            (lat_l1c[i],lon_l1c[i]) = m.toLatLon(mgrs_tiles[i])
+            toa_l1c[i] = bisplev(lat_l1c[i],lon_l1c[i],tck)
+
+        luss=1
+
         return lat_l1c, lon_l1c, toa_l1c
+
+    # L1C test:
+    # 1. plot L1B grid(red) versus L1C(blue)
+    # 2.plot SPATIAL SAMPLING DISTANCE [haversine] for central row of the L1B geometry
 
     def checkSize(self, lat,toa):
         '''
