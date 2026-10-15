@@ -85,8 +85,6 @@ class l1c(initL1c):
             (lat_l1c[i],lon_l1c[i]) = m.toLatLon(mgrs_tiles[i])
             toa_l1c[i] = bisplev(lat_l1c[i],lon_l1c[i],tck)
 
-        luss=1
-
         return lat_l1c, lon_l1c, toa_l1c
 
     # L1C test:
