@@ -5,8 +5,12 @@ from l1b.src.l1b import l1b
 
 # Directory - this is the common directory for the execution of the E2E, all modules
 auxdir = r'C:\\Users\\Usuario\\Documents\\GitHub\\EODP\\auxiliary'
-indir = r"C:\\Users\\Usuario\\Documents\\GitHub\\EODP\\EODP_TER_2021\\EODP-TS-L1B\\input"
-outdir = r"C:\\Users\\Usuario\\Documents\\GitHub\\EODP\\EODP_TER_2021\\EODP-TS-L1B\\outputBoris"
+#indir = r"C:\\Users\\Usuario\\Documents\\GitHub\\EODP\\EODP_TER_2021\\EODP-TS-L1B\\input"
+#outdir = r"C:\\Users\\Usuario\\Documents\\GitHub\\EODP\\EODP_TER_2021\\EODP-TS-L1B\\outputBoris"
+
+# for E2E
+indir = r"C:/Users/Usuario/Documents/GitHub/EODP/EODP_TER_2021/EODP-TS-E2E/output_Boris"
+outdir = r"C:/Users/Usuario/Documents/GitHub/EODP/EODP_TER_2021/EODP-TS-E2E/output_Boris_l1b"
 
 #outdir = r"C:\\Users\\Usuario\\Documents\\GitHub\\EODP\\EODP_TER_2021\\EODP-TS-L1B\\outputBoris_notequal"
 
