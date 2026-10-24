@@ -9,11 +9,11 @@ class ismConfig:
         # Configuration parameters
         #--------------------------------------------------------------------------------
         # CCD
-        #self.pix_size = 30e-6  # [m] Pixel size in microns for the MS channels
-        #self.t_int = 0.00672  # [s] Integration time
+        self.pix_size = 30e-6  # [m] Pixel size in microns for the MS channels
+        self.t_int = 0.00672  # [s] Integration time
         #for E2E
-        self.pix_size = 42e-6                    # [m] Pixel size in microns for the MS channels
-        self.t_int = 0.0428                     # [s] Integration time
+        #self.pix_size = 42e-6                    # [m] Pixel size in microns for the MS channels
+        #self.t_int = 0.0428                     # [s] Integration time
 
         # Optical system
         self.D = 0.150  # [m] Telescope pupil diameter
