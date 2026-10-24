@@ -187,24 +187,155 @@ class mtf:
         Hmotion = np.sinc(kmotion*fn2D)
         return Hmotion
 
-    def plotMtf(self,Hdiff, Hdefoc, Hwfe, Hdet, Hsmear, Hmotion, Hsys, nlines, ncolumns, fnAct, fnAlt, directory, band):
-        """
-        Plotting the system MTF and all of its contributors
-        :param Hdiff: Diffraction MTF
-        :param Hdefoc: Defocusing MTF
-        :param Hwfe: Wavefront electronics MTF
-        :param Hdet: Detector MTF
-        :param Hsmear: Smearing MTF
-        :param Hmotion: Motion blur MTF
-        :param Hsys: System MTF
-        :param nlines: Number of lines in the TOA
-        :param ncolumns: Number of columns in the TOA
-        :param fnAct: normalised frequencies in the ACT direction (f/(1/w))
-        :param fnAlt: normalised frequencies in the ALT direction (f/(1/w))
-        :param directory: output directory
-        :param band: band
-        :return: N/A
-        """
-        #TODO
 
+    def plotMtf(self, Hdiff, Hdefoc, Hwfe, Hdet, Hsmear, Hmotion,
+                Hsys, nlines, ncolumns, fnAct, fnAlt, directory, band):
 
+        # ---------------------------------------------------------
+        # Extract ACT MTF profiles (ALT frequency = 0)
+        # ---------------------------------------------------------
+
+        row = nlines // 2
+        col = ncolumns // 2
+
+        # Include the Nyquist frequency at +0.5.
+        # The original frequency array contains -0.5 but not +0.5.
+        frequency = np.append(fnAct[col:], 0.5)
+
+        def act_slice(matrix):
+            return np.append(matrix[row, col:], matrix[row, 0])
+
+        # Store profiles from all four VNIR bands
+        if not hasattr(mtf, "_mtf_profiles") or band == "VNIR-0":
+            mtf._mtf_profiles = {}
+
+        mtf._mtf_profiles[band] = {
+            "frequency": frequency,
+            "Diffraction": act_slice(Hdiff),
+            "Defocus": act_slice(Hdefoc),
+            "WFE": act_slice(Hwfe),
+            "Detector": act_slice(Hdet),
+            "Smearing": act_slice(Hsmear),
+            "Motion blur": act_slice(Hmotion),
+            "System": act_slice(Hsys)
+        }
+
+        # ---------------------------------------------------------
+        # Plot all four VNIR bands in a 2x2 figure
+        # ---------------------------------------------------------
+
+        styles = {
+            "Diffraction": ("tab:blue", "-", 1.7),
+            "Defocus": ("tab:orange", "-", 1.7),
+            "WFE": ("tab:green", "-", 1.7),
+            "Detector": ("tab:red", "-", 1.7),
+            "Smearing": ("tab:purple", "-", 1.7),
+            "Motion blur": ("tab:brown", "-", 1.7),
+            "System": ("black", "-", 2.8)
+        }
+
+        fig, axes = plt.subplots(2, 2, figsize=(12, 6.8))
+
+        legend_handles = []
+        legend_labels = []
+
+        for i, ax in enumerate(axes.flat):
+
+            band_name = f"VNIR-{i}"
+            ax.set_title(band_name, fontsize=16)
+
+            if band_name not in mtf._mtf_profiles:
+                ax.set_visible(False)
+                continue
+
+            profiles = mtf._mtf_profiles[band_name]
+            freq = profiles["frequency"]
+
+            for name, (color, linestyle, linewidth) in styles.items():
+
+                ax.plot(
+                    freq,
+                    profiles[name],
+                    color=color,
+                    linestyle=linestyle,
+                    linewidth=linewidth,
+                    label=name
+                )
+
+            if not legend_handles:
+                legend_handles, legend_labels = ax.get_legend_handles_labels()
+
+            ax.set_xlim(0, 0.5)
+            ax.set_ylim(0, 1.04)
+
+            ax.set_xticks(np.arange(0, 0.51, 0.1))
+            ax.set_yticks(np.arange(0, 1.01, 0.25))
+
+            ax.tick_params(labelsize=12)
+            ax.grid(True, alpha=0.3)
+
+        # Shared axis labels
+        fig.supxlabel(
+            "Spatial frequencies f/(1/w) [-]",
+            fontsize=14,
+            y=0.16
+        )
+
+        fig.supylabel(
+            "MTF [-]",
+            fontsize=14,
+            x=0.04
+        )
+
+        # Shared legend
+        fig.legend(
+            legend_handles,
+            legend_labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, 0.01),
+            ncol=4,
+            fontsize=12,
+            frameon=False
+        )
+
+        fig.subplots_adjust(
+            left=0.11,
+            right=0.97,
+            top=0.94,
+            bottom=0.25,
+            wspace=0.20,
+            hspace=0.34
+        )
+
+        # Save the combined figure
+        os.makedirs(directory, exist_ok=True)
+
+        fig.savefig(
+            os.path.join(directory, "mtf_ACT_all_VNIR.png"),
+            dpi=300,
+            bbox_inches="tight"
+        )
+
+        plt.close(fig)
+
+        # ---------------------------------------------------------
+        # Save all seven MTF matrices as NetCDF files
+        # ---------------------------------------------------------
+
+        mtf_components = {
+            "Hdiff": Hdiff,
+            "Hdefoc": Hdefoc,
+            "Hwfe": Hwfe,
+            "Hdet": Hdet,
+            "Hsmear": Hsmear,
+            "Hmotion": Hmotion,
+            "Hsys": Hsys
+        }
+
+        for name, matrix in mtf_components.items():
+
+            filename = f"{name}_{band}"
+
+            writeMat(directory, filename, matrix)
+
+            self.logger.info(f"Saved MTF: {filename}")
